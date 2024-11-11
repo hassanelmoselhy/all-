@@ -7,7 +7,11 @@ class CalcLogic {
   static double? calcExpSolve = 0.0;
 
   void btnAddExp(String btnTitle) {
-    calcExp += btnTitle;
+    if (btnTitle == '%' && calcExp.isNotEmpty) {
+      btnPercentage();
+    } else {
+      calcExp += btnTitle;
+    }
   }
 
   void btnCExp() {
@@ -47,6 +51,13 @@ class CalcLogic {
     }
   }
 
+  void btnPercentage() {
+    double? lastNumber = double.tryParse(calcExp);
+    if (lastNumber != null) {
+      calcExp = (lastNumber / 100).toString();
+    }
+  }
+
   bool _isOperator(String character) {
     return character == '+' || character == '-' || character == '*' || character == '/';
   }
@@ -58,102 +69,58 @@ class CalcLogic {
   }
 
   void solveExp() {
-    Parser parser = Parser();
-    String sanitizedCalcExp = calcExp.replaceAll(' ', '/ 100');
-    Expression exp = parser.parse(sanitizedCalcExp);
-    ContextModel contextModel = ContextModel();
-    calcExpSolve = exp.evaluate(EvaluationType.REAL, contextModel);
+    try {
+      Parser parser = Parser();
+      Expression exp = parser.parse(calcExp);
+      ContextModel contextModel = ContextModel();
+      calcExpSolve = exp.evaluate(EvaluationType.REAL, contextModel);
+      calcExp = calcExpSolve.toString();
+    } catch (e) {
+      calcExp = 'Error';
+    }
   }
 
+  // Mapping each button to a specific function
   List<String> calcBtnTitle = [
-    'C',
-    '+/-',
-    '%',
-    'DEL',
-    '7',
-    '8',
-    '9',
-    '/',
-    '4',
-    '5',
-    '6',
-    'X',
-    '1',
-    '2',
-    '3',
-    '-',
-    '0',
-    '.',
-    '=',
-    '+',
+    'C', '+/-', '%', 'DEL', '7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', '=', '+',
   ];
 
   List<Color> calcBtnColorTitle = [
-    AppColor.black,
-    AppColor.black,
-    AppColor.black,
-    AppColor.black,
-    AppColor.black,
-    AppColor.black,
-    AppColor.black,
-    AppColor.white,
-    AppColor.black,
-    AppColor.black,
-    AppColor.black,
-    AppColor.white,
-    AppColor.black,
-    AppColor.black,
-    AppColor.black,
-    AppColor.white,
-    AppColor.black,
-    AppColor.black,
-    AppColor.white,
-    AppColor.white,
+    AppColor.black, AppColor.black, AppColor.black, AppColor.black, AppColor.black,
+    AppColor.black, AppColor.black, AppColor.white, AppColor.black, AppColor.black,
+    AppColor.black, AppColor.white, AppColor.black, AppColor.black, AppColor.black,
+    AppColor.white, AppColor.black, AppColor.black, AppColor.white, AppColor.white,
   ];
 
   List<Color> calcBtnColor = [
-    AppColor.calcBtn,
-    AppColor.calcBtn,
-    AppColor.calcBtn,
-    AppColor.calcBtn,
-    AppColor.white,
-    AppColor.white,
-    AppColor.white,
-    AppColor.primary,
-    AppColor.white,
-    AppColor.white,
-    AppColor.white,
-    AppColor.primary,
-    AppColor.white,
-    AppColor.white,
-    AppColor.white,
-    AppColor.primary,
-    AppColor.white,
-    AppColor.white,
-    AppColor.orange,
-    AppColor.primary
+    AppColor.calcBtn, AppColor.calcBtn, AppColor.calcBtn, AppColor.calcBtn, AppColor.white,
+    AppColor.white, AppColor.white, AppColor.primary, AppColor.white, AppColor.white,
+    AppColor.white, AppColor.primary, AppColor.white, AppColor.white, AppColor.white,
+    AppColor.primary, AppColor.white, AppColor.white, AppColor.orange, AppColor.primary,
   ];
 
-  List<Function> calcBtnFunc = [
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-    () {},
-  ];
+  List<void Function()> calcBtnFunc() {
+    return [
+      btnCExp,
+      btnChangeSign,
+      btnPercentage,
+      btnDelExp,
+      () => btnAddExp('7'),
+      () => btnAddExp('8'),
+      () => btnAddExp('9'),
+      () => btnAddExp('/'),
+      () => btnAddExp('4'),
+      () => btnAddExp('5'),
+      () => btnAddExp('6'),
+      () => btnAddExp('*'),
+      () => btnAddExp('1'),
+      () => btnAddExp('2'),
+      () => btnAddExp('3'),
+      () => btnAddExp('-'),
+      () => btnAddExp('0'),
+      () => btnAddExp('.'),
+      solveExp,
+      () => btnAddExp('+'),
+    ];
+  }
 }
